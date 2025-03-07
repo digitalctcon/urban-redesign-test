@@ -70,7 +70,7 @@ def make_sidebar():
 
         st.write("### Or select from existing images")
         image_category = st.selectbox("Select Category", ["park", "road", "street"])
-        image_folder = os.path.join("data", "images", image_category)
+        image_folder = os.path.join("data", "images", "input", image_category)
         st.session_state["image_folder"] = image_folder
         image_files = [f for f in os.listdir(image_folder) if f.endswith(('png', 'jpg', 'jpeg')) and "redesign" not in f]
 
@@ -110,7 +110,7 @@ def get_next_generation_id(log_file):
 
 def log_generation(input_path, output_path, prompt, image_type, category):
     """Logs the generation details to a CSV file."""
-    log_file = os.path.join("data", "generations", "generation_log.csv")
+    log_file = os.path.join("data", "logs", "generation_log.csv")
     generation_id = get_next_generation_id(log_file)
     file_exists = os.path.isfile(log_file)
     with open(log_file, mode='a', newline='') as file:
@@ -151,19 +151,19 @@ def main():
 
         st.session_state["output_image"] = output_image
 
-        # Save the new image in the same folder as the original image
+        # Save the new image in the output folder
         if "selected_image" in st.session_state:
             original_image_path = os.path.join(st.session_state["image_folder"], st.session_state["selected_image"])
             base_name, ext = os.path.splitext(st.session_state["selected_image"])
             timestamp = datetime.now().strftime("%d_%m_%Y_%H_%M")
             new_image_name = f"{base_name}_redesign_{timestamp}{ext}"
-            new_image_path = os.path.join(st.session_state["image_folder"], new_image_name)
+            new_image_path = os.path.join("data", "images", "output", os.path.basename(st.session_state["image_folder"]), new_image_name)
             st.session_state["output_image"].save(new_image_path)
             log_generation(original_image_path, new_image_path, prompt, "from_templates", os.path.basename(st.session_state["image_folder"]))  # Log the generation
         else:
-            new_image_path = "urban_redesign.png"
+            new_image_path = os.path.join("data", "images", "output", "other", "uploaded_image.png")
             st.session_state["output_image"].save(new_image_path)
-            log_generation("uploaded_image", new_image_path, prompt, "uploaded_by_user", "unknown")  # Log the generation
+            log_generation("uploaded_image", new_image_path, prompt, "uploaded_by_user", "other")  # Log the generation
 
         st.download_button(
             "💾 Download New Image",
