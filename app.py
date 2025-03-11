@@ -6,7 +6,10 @@ from diffusers import StableDiffusionInpaintPipeline
 from streamlit_drawable_canvas import st_canvas
 import os
 from datetime import datetime
+from accelerate import Accelerator
 import csv
+
+torch.classes.__path__ = []
 
 # Set Streamlit layout
 st.set_page_config(layout="wide")
@@ -146,7 +149,8 @@ def main():
         output_image = pipe(
             prompt=prompt,
             image=st.session_state["initial_image"],
-            mask_image=st.session_state["mask"]
+            mask_image=st.session_state["mask"],
+            num_inference_steps = 20,
         ).images[0]
 
         st.session_state["output_image"] = output_image

@@ -5,3 +5,4 @@ streamlit == 1.40.0
 streamlit-drawable-canvas
 numpy
 pillow
+accelerate
